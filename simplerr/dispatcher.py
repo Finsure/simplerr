@@ -124,16 +124,21 @@ class dispatcher(object):
 
     def dispatch_request(self, request, environ):
 
-        # Get view script and view module
-        sc = script(self.cwd, request.path)
-        view_module = sc.get_module()
-
         # Fire Pre Response Events
         self.global_events.fire_pre_response(request)
         request.view_events.fire_pre_response(request)
 
+        # RestorePresets
+        web.restore_presets()
+
+        # Get view script and view module
+        sc = script(self.cwd, request.path)
+        view_module = sc.get_module()
+
+        
         # Process Response, and get payload
         response = web.process(request, environ, self.cwd)
+
 
         # Done, fire post response events
         request.view_events.fire_post_response(request, response)
@@ -148,7 +153,7 @@ class wsgi(object):
 
     def __init__(self, site, hostname, port, use_reloader=True,
                   use_debugger=False, use_evalex=False, threaded=True,
-                  processes=1):
+                  processes=1, use_profiler=False):
 
         self.site = site
         self.hostname = hostname
@@ -198,7 +203,16 @@ class wsgi(object):
         )
 
     def make_app(self):
+        from werkzeug.contrib.profiler import ProfilerMiddleware
+        # self.app = ProfilerMiddleware(dispatcher(self.cwd.absolute().__str__(), self.global_events))
         self.app = dispatcher(self.cwd.absolute().__str__(), self.global_events)
+
+        # if self.use_profiler:
+        #     self.app = ProfilerMiddleware(self.app)
+
+
+
+
         return self.app
 
     def make_app_debug(self):
@@ -223,7 +237,6 @@ class wsgi(object):
                    self.app,
                    use_reloader=self.use_reloader,
                    use_debugger=self.use_debugger,
-                   use_evalex=self.use_evalex,
                    threaded=self.threaded,
                    processes=self.processes) # , ssl_context=(crt, key))
 

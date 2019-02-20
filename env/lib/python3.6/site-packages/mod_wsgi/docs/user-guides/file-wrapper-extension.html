@@ -1,0 +1,460 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>File Wrapper Extension &mdash; mod_wsgi 4.5.24 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="mod_wsgi 4.5.24 documentation" href="../index.html"/>
+        <link rel="up" title="User Guides" href="../user-guides.html"/>
+        <link rel="next" title="Registering Cleanup Code" href="registering-cleanup-code.html"/>
+        <link rel="prev" title="Access Control Mechanisms" href="access-control-mechanisms.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> mod_wsgi
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                4.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../project-status.html">Project Status</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security-issues.html">Security Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../requirements.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../user-guides.html">User Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="quick-installation-guide.html">Quick Installation Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation-on-macosx.html">Installation On MacOS X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick-configuration-guide.html">Quick Configuration Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration-guidelines.html">Configuration Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation-issues.html">Installation Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration-issues.html">Configuration Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="application-issues.html">Application Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="frequently-asked-questions.html">Frequently Asked Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="checking-your-installation.html">Checking Your Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging-techniques.html">Debugging Techniques</a></li>
+<li class="toctree-l2"><a class="reference internal" href="processes-and-threading.html">Processes And Threading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reloading-source-code.html">Reloading Source Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virtual-environments.html">Virtual Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="access-control-mechanisms.html">Access Control Mechanisms</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File Wrapper Extension</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-of-wrapper-usage">Example Of Wrapper Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#addition-of-content-length">Addition Of Content Length</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#existing-content-length">Existing Content Length</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#restrictions-on-optimisations">Restrictions On Optimisations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="registering-cleanup-code.html">Registering Cleanup Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assorted-tips-and-tricks.html">Assorted Tips And Tricks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="issues-with-pickle-module.html">Issues With Pickle Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="issues-with-expat-library.html">Issues With Expat Library</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../finding-help.html">Finding Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reporting-bugs.html">Reporting Bugs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source-code.html">Source Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release-notes.html">Release Notes</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mod_wsgi</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../user-guides.html">User Guides</a> &raquo;</li>
+        
+      <li>File Wrapper Extension</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/user-guides/file-wrapper-extension.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="file-wrapper-extension">
+<h1>File Wrapper Extension<a class="headerlink" href="#file-wrapper-extension" title="Permalink to this headline">¶</a></h1>
+<p>The WSGI specification supports an optional feature that can be implemented
+by WSGI adapters for platform specific file handling.</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://www.python.org/dev/peps/pep-0333/#optional-platform-specific-file-handling">http://www.python.org/dev/peps/pep-0333/#optional-platform-specific-file-handling</a></li>
+</ul>
+</div></blockquote>
+<p>What this allows is for a WSGI application to return a special object type
+which wraps a Python file like object. If that file like object statisfies
+certain conditions as dictated by a specific platform, then the WSGI
+adapter is allowed to return the content of that file in an optimised
+manner.</p>
+<p>The intent of this is to provide better performance for serving up static
+file content than a pure Python WSGI application may itself be able to
+achieve.</p>
+<p>Do note however that for the best performance, static files should always
+be served by a web server. In the case of mod_wsgi this means by Apache
+itself rather than mod_wsgi or the WSGI application. Using the web server
+may not always be possible however, such as for files generated on demand.</p>
+<div class="section" id="example-of-wrapper-usage">
+<h2>Example Of Wrapper Usage<a class="headerlink" href="#example-of-wrapper-usage" title="Permalink to this headline">¶</a></h2>
+<p>A WSGI adapter implementing this extension needs to supply a special
+callable object under the key ‘wsgi.file_wrapper’ in the ‘environ’
+dictionary passed to the WSGI application.</p>
+<p>What this callable does will be specific to a WSGI adapter, but it must be
+a callable that accepts one required positional parameter, and one optional
+positional parameter. The first parameter is the file like object to be
+sent, and the second parameter is an optional block size. If the block size
+is not supplied then the WSGI adapter would choose a value which would be
+most appropriate for the specific hosting mechanism.</p>
+<p>Whatever the WSGI adapter does, the result of the callable must be an
+iterable object which can be used directly as the response from the WSGI
+application or for passing into any WSGI middleware. Provided the response
+content isn’t consumed by any WSGI middleware and the iterable object gets
+passed through the WSGI adapter, the WSGI adapter should recognise the
+special iterable object and trigger any special handling to return the
+response in a more efficient way.</p>
+<p>Because the support of this platform specific file handling is optional for
+any specific WSGI adapter, any user code should be coded so as to be able
+to cope with it not existing.</p>
+<p>Using the snippet as described in the WSGI specification as guide, the
+WSGI application would be written as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;200 OK&#39;</span>
+    <span class="n">response_headers</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)]</span>
+    <span class="n">start_response</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">response_headers</span><span class="p">)</span>
+
+    <span class="n">filelike</span> <span class="o">=</span> <span class="n">file</span><span class="p">(</span><span class="s1">&#39;usr/share/dict/words&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+    <span class="n">block_size</span> <span class="o">=</span> <span class="mi">4096</span>
+
+    <span class="k">if</span> <span class="s1">&#39;wsgi.file_wrapper&#39;</span> <span class="ow">in</span> <span class="n">environ</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;wsgi.file_wrapper&#39;</span><span class="p">](</span><span class="n">filelike</span><span class="p">,</span> <span class="n">block_size</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">filelike</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">block_size</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that the file must always be opened in binary mode. If this isn’t done
+then on platforms which do CR/LF translation automatically then the
+original content will not be returned but the translated form. As well as
+it not being the original content this can cause problems with calculated
+content lengths if the ‘Content-Length’ response header is returned by the
+WSGI application and it has been generated by looking at the actual file
+size rather than the translated content.</p>
+</div>
+<div class="section" id="addition-of-content-length">
+<h2>Addition Of Content Length<a class="headerlink" href="#addition-of-content-length" title="Permalink to this headline">¶</a></h2>
+<p>The WSGI specification does not say anything specific about whether a WSGI
+adapter should generate a ‘Content-Length’ response header when the
+‘wsgi.file_wrapper’ extension is used and the WSGI application does not
+return one itself.</p>
+<p>For mod_wsgi at least, if the WSGI application doesn’t provide a
+‘Content-Length’ response header it will calculate the response content
+length automatically as being from the current file position to the end of
+the file. A ‘Content-Length’ header will then be added to the response
+for that value.</p>
+<p>As far as is known, only mod_wsgi automatically supplies a ‘Content-Length’
+response header in this way. If consistent behaviour is required on all
+platforms, the WSGI application should always calculate the length and add
+the header itself.</p>
+</div>
+<div class="section" id="existing-content-length">
+<h2>Existing Content Length<a class="headerlink" href="#existing-content-length" title="Permalink to this headline">¶</a></h2>
+<p>Where a ‘Content-Length’ is specified by the WSGI application, mod_wsgi
+will honour that content length. That is, mod_wsgi will only return as many
+bytes of the file as specified by the ‘Content-Length’ header.</p>
+<p>This is not a requirement of the WSGI specification, but then this is one
+area of the WSGI specification which is arguably broken. This manifests in
+the WSGI specification where it says:</p>
+<blockquote>
+<div>“”“transmission should begin at the current position within the “file”
+at the time that transmission begins, and continue until the end is
+reached”“”</div></blockquote>
+<p>If this interpretation is used, where a WSGI application supplies a
+‘Content-Length’ header and the number of bytes listed is less than the
+number of bytes remaining in the file from the current position, then more
+bytes than specified by the ‘Content-Length’ header would be returned.</p>
+<p>To do this would technically be in violation of HTTP specifications which
+should dictate that the number of bytes returned be the same as that
+specified by the ‘Content-Length’ response header if supplied.</p>
+<p>Not only is this statement in the WSGI specification arguably wrong, the
+example snippet of code which shows how to implement a fallback where the
+‘wsgi.file_wrapper’ is not present, ie.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s1">&#39;wsgi.file_wrapper&#39;</span> <span class="ow">in</span> <span class="n">environ</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;wsgi.file_wrapper&#39;</span><span class="p">](</span><span class="n">filelike</span><span class="p">,</span> <span class="n">block_size</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">filelike</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">block_size</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>is also wrong. This is because it doesn’t restrict the amount of bytes
+returned to that specified by ‘Content-Length’.</p>
+<p>Although mod_wsgi for normal iterable content would also discard any bytes
+in excess of the specified ‘Content-Length’, many other WSGI adapters are
+not known to do this and would just pass back all content regardless. The
+result of returning excessive content above the specified ‘Content-Length’
+would be the failure of subsequent connections were the connection using
+keep alive and was pipe lining requests.</p>
+<p>This problem is also compounded by the WSGI specification not placing any
+requirement on WSGI middleware to respect the ‘Content-Length’ response
+header when processing response content. Thus WSGI middleware could also
+in general generate incorrect response content by virtue of not honouring
+the ‘Content-Length’ response header.</p>
+<p>Overall, although mod_wsgi does what is the logical and right thing to do,
+if you need to write code which is portable to other WSGI hosting mechanisms,
+you should never produce a ‘Content-Length’ response header which lists a
+number of bytes different to that which would be yielded from an iterable
+object such as a file like object. Thus it would be impossible to use any
+platform specific file handling features to return a range of bytes from a
+file.</p>
+</div>
+<div class="section" id="restrictions-on-optimisations">
+<h2>Restrictions On Optimisations<a class="headerlink" href="#restrictions-on-optimisations" title="Permalink to this headline">¶</a></h2>
+<p>Although mod_wsgi always supplies the ‘wsgi.file_wrapper’ callable object as
+part of the WSGI ‘environ’ dictionary, optimised methods of returning the
+file contents as the response are not always used.</p>
+<p>A general restriction is that the file like object must supply both a
+‘fileno()’ and ‘tell()’ method. This is necessary in order to get access to
+the underlying file descriptor and to determine the current position within
+the file.</p>
+<p>The file descriptor is needed so as to be able to use the ‘sendfile()’
+function to return file contents in a more optimal manner. The ‘tell()’
+method is needed to be able to calculate response ‘Content-Length’ and to
+validate that where the WSGI application supplies its own ‘Content-Length’
+header that there is sufficient bytes in the file.</p>
+<p>Because the ‘sendfile()’ function is used by Apache to return file contents
+in a more optimal manner and because on Windows a Python file object only
+provides a Windows file handle and not a file descriptor, no optimisations
+are available on the Windows platform.</p>
+<p>The optimisations are also not able to be used if using Apache 1.3. This is
+because Apache doesn’t provide access to a mechanism for optimised sending
+of file contents to a content handler under Apache 1.3.</p>
+<p>Finally, optimisations are not used where the WSGI application is running in
+daemon mode. This is currently disabled because some UNIX platforms do not
+appear to support use of the ‘sendfile()’ function over UNIX sockets and only
+support INET sockets. This situation may possibly have changed with recent
+versions of Linux at least but this has yet to be investigated properly.</p>
+<p>Whether or not optimisations are supported, the mod_wsgi ‘wsgi.file_wrapper’
+extension generally still performs better than if a pure Python iterable
+object was used to yield the file contents.</p>
+<p>Note that this all presumes that the iterable object returned by
+‘wsgi.file_wrapper’ is actually passed back to mod_wsgi and is not consumed
+by a WSGI middleware. For example, a WSGI middleware which compresses the
+response content would consume the response content and modify it with a
+different iterable object being returned. In this case there is no chance
+for optimisations to be used for returning the file contents.</p>
+<p>This problem isn’t restricted though to just where the response content is
+modified in some way and also extends to any WSGI middleware that wants to
+replace the ‘close()’ method to perform some cleanup actions at the end of
+a request.</p>
+<p>This is because in order to interject the cleanup actions triggered on the
+‘close()’ method of the iterable object it has to replace the existing
+iterable object with another which wraps the first, with the outer
+providing its own ‘close()’ method. An example of a middleware which
+replaces the ‘close()’ method in this way can be found in
+<a class="reference internal" href="registering-cleanup-code.html"><span class="doc">Registering Cleanup Code</span></a>.</p>
+<p>It is thus quite easy for a WSGI application stack to inadvertantly defeat
+completely any attempts to return file contents in an optimised way using
+the ‘wsgi.file_wrapper’ extension of WSGI. As such, attempts should always
+be used instead to make use of a real web server, whether that be a separate
+web server, or in the case of mod_wsgi the underlying Apache web server.</p>
+<p>Where necessary, features of web servers or proxies such as
+‘X-Accel-Redirect’, ‘X-Sendfile’ or other special purpose headers could be
+used. If using mod_wsgi daemon mode and using mod_wsgi version 3.0 or later,
+the ‘Location’ response header can also be used.</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="registering-cleanup-code.html" class="btn btn-neutral float-right" title="Registering Cleanup Code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="access-control-mechanisms.html" class="btn btn-neutral" title="Access Control Mechanisms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, Graham Dumpleton.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'4.5.24',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

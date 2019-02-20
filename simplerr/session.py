@@ -5,28 +5,18 @@ from datetime import datetime, timedelta
 
 class SessionSignalMixin():
 
+
     def pre_response(self, request):
-        print("    > Cleaning Up Sessions V2")
-
         self.clean()
-
-        # print("    > Active Session: {}".format( len(self.sessions.keys())))
         sid = request.cookies.get(self.COOKIE_NAME)
-        print("    > Pre response session fired, cookie sid is: {}".format(sid))
-
 
         if sid is None:
             request.session = self.new()
-            print("    > Generated new sid: {}".format(request.session.sid))
         else:
             request.session = self.get(sid)
-            print("    > Using existing sid: {}".format(request.session.sid))
 
     def post_response(self, request, response):
-        print("    > Post response session fired, saving sid: {}", request.session.sid)
-
         if request.session.should_save:
-            print("    > Saving Session to cookie")
             self.save(request.session)
             response.set_cookie(self.COOKIE_NAME, request.session.sid)
 
@@ -93,10 +83,7 @@ class MMemorySessionStore(SessionStore, SessionSignalMixin):
 
     def get(self, sid):
         if not self.is_valid_key(sid) or sid not in self.sessions:
-            print("    > SESSION -> new session, not valid key")
             return self.new()
-
-        print("    > SESSION --> existing session")
         return self.session_class(self.sessions[sid]['session'], sid, False)
 
 

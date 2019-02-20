@@ -16,7 +16,7 @@ import re
 
 here = path.abspath(path.dirname(__file__))
 
-with io.open('README.rst', 'rt', encoding='utf8') as f:
+with io.open('README.md', 'rt', encoding='utf8') as f:
     readme = f.read()
 
 with io.open('simplerr/__init__.py', 'rt', encoding='utf8') as f:
@@ -133,7 +133,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'sample=simplerr.__main__:main',
+            'webserv=simplerr.__main__:main',
         ],
     },
 
