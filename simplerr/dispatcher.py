@@ -25,6 +25,7 @@ from .session import FileSystemSessionStore
 import sys
 import json
 
+
 class Error(Exception):
     """Base class for exceptions in this module."""
     pass
@@ -62,6 +63,7 @@ class WebEvents(object):
     def __init__(self):
         self.pre_request = []
         self.post_request = []
+        self.post_exception = []
 
     # Pre-request subscription
     def on_pre_response(self, fn):
@@ -87,6 +89,17 @@ class WebEvents(object):
         for fn in self.post_request:
             fn(request, response)
 
+    # Post-Request exception management
+    def on_post_exception(self, fn):
+        self.post_exception.append(fn)
+
+    def off_post_exception(self, fn):
+        """Remove from pre_request"""
+        self.post_exception.remove(fn)
+
+    def fire_post_exception(self, request, e):
+        for fn in self.post_exception:
+            fn(request, e)
 
 
 class WebRequest(Request):
@@ -107,6 +120,7 @@ class WebRequest(Request):
             out = json.loads(data, encoding="utf8")
         except ValueError as e:
             out = None
+
         return out
 
 
@@ -135,10 +149,14 @@ class dispatcher(object):
         sc = script(self.cwd, request.path)
         view_module = sc.get_module()
 
-        
         # Process Response, and get payload
-        response = web.process(request, environ, self.cwd)
-
+        try:
+            response = web.process(request, environ, self.cwd)
+        except Exception as e:
+            # Handle exception
+            request.view_events.fire_post_exception(request, e)
+            self.global_events.fire_post_exception(request, e)
+            raise e
 
         # Done, fire post response events
         request.view_events.fire_post_response(request, response)
@@ -148,12 +166,12 @@ class dispatcher(object):
         return response  # return web.process(route).
 
 
-### WSGI Server
+# WSGI Server
 class wsgi(object):
 
     def __init__(self, site, hostname, port, use_reloader=True,
-                  use_debugger=False, use_evalex=False, threaded=True,
-                  processes=1, use_profiler=False):
+                 use_debugger=False, use_evalex=False, threaded=True,
+                 processes=1, use_profiler=False):
 
         self.site = site
         self.hostname = hostname
@@ -210,14 +228,11 @@ class wsgi(object):
         # if self.use_profiler:
         #     self.app = ProfilerMiddleware(self.app)
 
-
-
-
         return self.app
 
     def make_app_debug(self):
         self.app = DebuggedApplication(
-            #dispatcher(self.cwd.absolute().__str__()),
+            # dispatcher(self.cwd.absolute().__str__()),
             self.make_app(),
             evalex=True
         )
@@ -239,4 +254,3 @@ class wsgi(object):
                    use_debugger=self.use_debugger,
                    threaded=self.threaded,
                    processes=self.processes) # , ssl_context=(crt, key))
-
