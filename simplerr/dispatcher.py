@@ -82,7 +82,7 @@ class WebEvents(object):
         self.post_request.append(fn)
 
     def off_post_response(self, fn):
-        """Remove from pre_request"""
+        """Remove from post_request"""
         self.post_request.remove(fn)
 
     def fire_post_response(self, request, response):
@@ -94,7 +94,7 @@ class WebEvents(object):
         self.post_exception.append(fn)
 
     def off_post_exception(self, fn):
-        """Remove from pre_request"""
+        """Remove from post_exception"""
         self.post_exception.remove(fn)
 
     def fire_post_exception(self, request, e):
