@@ -118,7 +118,7 @@ class WebRequest(Request):
         try:
             data = self.data
             out = json.loads(data, encoding="utf8")
-        except ValueError as e:
+        except ValueError:
             out = None
 
         return out
@@ -154,7 +154,6 @@ class dispatcher(object):
             response = web.process(request, environ, self.cwd)
         except Exception as e:
             # Handle exception
-            request.view_events.fire_post_exception(request, e)
             self.global_events.fire_post_exception(request, e)
             raise e
 
@@ -204,6 +203,30 @@ class wsgi(object):
 
         # Add CWD to search path, this is where project modules will be located
         sys.path.append( self.cwd.absolute().__str__() )
+
+    def pre_response(self, m):
+        self.global_events.on_pre_response(m)
+
+        def decorator(f, request):
+            f(request)
+            return f
+        return decorator
+
+    def post_response(self, m):
+        self.global_events.on_post_response(m)
+
+        def decorator(f, request, response):
+            f(request, response)
+            return f
+        return decorator
+
+    def post_exception(self, m):
+        self.global_events.on_post_exception(m)
+
+        def decorator(f, request, error):
+            f(request, error)
+            return f
+        return decorator
 
     def make_cwd(self):
         path_site = Path(self.site)
