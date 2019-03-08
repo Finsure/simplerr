@@ -88,6 +88,7 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
         'click==7.0',
+        'colorama==0.3.9',
         'Jinja2==2.10',
         'peewee==3.0.18',
         'Werkzeug==0.14.1',
