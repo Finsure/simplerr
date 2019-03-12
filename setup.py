@@ -5,14 +5,13 @@ https://packaging.python.org/en/latest/distributing.html
 https://github.com/pypa/sampleproject
 """
 
+import io
+import re
+
 # Always prefer setuptools over distutils
 from setuptools import setup
 # To use a consistent encoding
 from os import path
-
-import io
-import re
-
 
 here = path.abspath(path.dirname(__file__))
 
@@ -22,7 +21,6 @@ with io.open('README.md', 'rt', encoding='utf8') as f:
 with io.open('simplerr/__init__.py', 'rt', encoding='utf8') as f:
     info = f.read()
     version = re.search(r'__version__ = \"(.*?)\"', info).group(1)
-
 
 setup(
     name='simplerr',
@@ -108,9 +106,9 @@ setup(
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
-    #package_data={
-    #    'sample': ['package_data.dat'],
-    #},
+    # package_data={
+    #     'sample': ['package_data.dat'],
+    # },
 
     # Although 'package_data' is the preferred approach, in some case you may
     # need to place data files outside of your packages. See:

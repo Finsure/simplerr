@@ -1,6 +1,5 @@
-peewee==3.0.18
 click==7.0
-matplotlib==3.0.3
+peewee==3.0.18
 Werkzeug==0.14.1
 Jinja2==2.10
-requests==2.18.4
+termcolor==1.1.0

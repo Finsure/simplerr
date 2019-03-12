@@ -1,0 +1,3 @@
+colour-runner==0.1.1
+matplotlib==3.0.3
+requests==2.18.4
