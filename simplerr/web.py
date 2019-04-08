@@ -15,6 +15,14 @@ from .cors import CORS
 from .methods import GET, POST, DELETE, PUT, PATCH, BaseMethod
 from .serialise import json_serial, tojson
 from .errors import TooManyArgumentsError
+<<<<<<< HEAD
+=======
+
+# TODO: Get rid of this dependancy
+from peewee import *
+from peewee import ModelSelect
+from playhouse.shortcuts import model_to_dict, dict_to_model
+>>>>>>> b3e42cf14e2b4b8e828f57516e3eb015d6353d7a
 
 from .peewee import is_model, is_model_select, model_to_dict
 
@@ -118,10 +126,9 @@ class web(object):
         web.destinations = []
 
     def __init__(self, *args, route=None, template=None, methods=None, endpoint=None, file=False, cors=None, mimetype=None):
-
         self.endpoint = endpoint
         self.fn = None
-        self.args = None # to be set when matched() is called
+        self.args = None  # to be set when matched() is called
         self.file = file
         self.cors = cors
         self.mimetype = mimetype
