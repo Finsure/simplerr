@@ -14,7 +14,7 @@ from .template import Template
 from .cors import CORS
 from .methods import GET, POST, DELETE, PUT, PATCH, BaseMethod
 from .serialise import json_serial, tojson
-from .errors import ToManyArgumentsError
+from .errors import TooManyArgumentsError
 
 # TODO: Get rid of this dependancy
 from peewee import *
@@ -38,7 +38,7 @@ class web(object):
     ==================
 
     The `web()` decorator (routes) wraps the `werkzueg.routing.Rule()` format
-    `<converter(arguments):name>`. 
+    `<converter(arguments):name>`.
 
     In addition to the `Route()` parameters, `web()` also add's a `template` to
     use in rendering that endpoint.
@@ -122,10 +122,9 @@ class web(object):
         web.destinations = []
 
     def __init__(self, *args, route=None, template=None, methods=None, endpoint=None, file=False, cors=None, mimetype=None):
-
         self.endpoint = endpoint
         self.fn = None
-        self.args = None # to be set when matched() is called
+        self.args = None  # to be set when matched() is called
         self.file = file
         self.cors = cors
         self.mimetype = mimetype
@@ -172,27 +171,25 @@ class web(object):
             elif(self.template is None):
                 self.template = args_strings[0]
             else:
-                raise ToManyArgumentsError("Got too many string arguments")
+                raise TooManyArgumentsError("Got too many string arguments")
 
         # Two strings - definately should be a route and a template
         if len(args_strings) == 2:
             if(self.route is None and self.template is None):
                 self.route, self.template = args_strings
             else:
-                raise ToManyArgumentsError("Got too many string arguments")
+                raise TooManyArgumentsError("Got too many string arguments")
 
         # Way to many strings to infer what needs to happen - not something
         # currently supported.
         if len(args_strings) > 2:
-            raise ToManyArgumentsError("Got too many string arguments")
-
-
+            raise TooManyArgumentsError("Got too many string arguments")
 
 
     def __call__(self, fn):
         # A quick cleanup first, if no endpoint was specified we need to set it
         # to the view function
-        self.endpoint = self.endpoint or id(fn) # Default endpoint name if none provided.
+        self.endpoint = self.endpoint or id(fn)  # Default endpoint name if none provided.
 
         # Proceed to create decorator
         self.fn = fn
@@ -334,7 +331,7 @@ class web(object):
     def response(data, *args, **kwargs):
         # TODO: This should build a web() compliant response object
         # that handles cors, additional headers, etc
-        response=Response(data, *args, **kwargs)
+        response = Response(data, *args, **kwargs)
         # if cors: cors.set(response)
 
 
@@ -383,4 +380,3 @@ class web(object):
     @staticmethod
     def all():
         return web.destination
-
