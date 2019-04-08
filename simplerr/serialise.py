@@ -16,17 +16,17 @@ from datetime import date, datetime, time
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
 
-    if isinstance(obj, (datetime, date, time)):
-        return obj.isoformat(sep=' ')
+    if isinstance(obj, datetime):
+        return obj.isoformat(' ')
 
+    if isinstance(obj, (date, time)):
+        return obj.isoformat()
 
     if isinstance(obj, Model):
         return model_to_dict(obj)
 
-
     if isinstance(obj, ModelSelect):
         return [ model_to_dict(item) for item in obj ]
-
 
     return str(obj)
 
