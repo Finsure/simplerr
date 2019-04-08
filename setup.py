@@ -87,7 +87,6 @@ setup(
     install_requires=[
         'click==7.0',
         'Jinja2==2.10',
-        'peewee==3.0.18',
         'Werkzeug==0.14.1',
         'termcolor==1.1.0',
         # Doesntwork on windows, but needed for some examples
