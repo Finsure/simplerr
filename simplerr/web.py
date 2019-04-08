@@ -14,13 +14,9 @@ from .template import Template
 from .cors import CORS
 from .methods import GET, POST, DELETE, PUT, PATCH, BaseMethod
 from .serialise import json_serial, tojson
-from .errors import ToManyArgumentsError
+from .errors import TooManyArgumentsError
 
-# TODO: Get rid of this dependancy
-from peewee import *
-from peewee import ModelSelect
-from playhouse.shortcuts import model_to_dict, dict_to_model
-
+from .peewee import is_model, is_model_select, model_to_dict
 
 #  _   _   _   _  _  _   _ _ _  ___  ___   ___  _  _ _  ___  _  _  _  __
 # | \_/ | / \ | || \| | | | | || __|| o ) | o \/ \| | ||_ _|| || \| |/ _|
@@ -38,7 +34,7 @@ class web(object):
     ==================
 
     The `web()` decorator (routes) wraps the `werkzueg.routing.Rule()` format
-    `<converter(arguments):name>`. 
+    `<converter(arguments):name>`.
 
     In addition to the `Route()` parameters, `web()` also add's a `template` to
     use in rendering that endpoint.
@@ -172,27 +168,25 @@ class web(object):
             elif(self.template is None):
                 self.template = args_strings[0]
             else:
-                raise ToManyArgumentsError("Got too many string arguments")
+                raise TooManyArgumentsError("Got too many string arguments")
 
         # Two strings - definately should be a route and a template
         if len(args_strings) == 2:
             if(self.route is None and self.template is None):
                 self.route, self.template = args_strings
             else:
-                raise ToManyArgumentsError("Got too many string arguments")
+                raise TooManyArgumentsError("Got too many string arguments")
 
         # Way to many strings to infer what needs to happen - not something
         # currently supported.
         if len(args_strings) > 2:
-            raise ToManyArgumentsError("Got too many string arguments")
-
-
+            raise TooManyArgumentsError("Got too many string arguments")
 
 
     def __call__(self, fn):
         # A quick cleanup first, if no endpoint was specified we need to set it
         # to the view function
-        self.endpoint = self.endpoint or id(fn) # Default endpoint name if none provided.
+        self.endpoint = self.endpoint or id(fn)  # Default endpoint name if none provided.
 
         # Proceed to create decorator
         self.fn = fn
@@ -251,7 +245,7 @@ class web(object):
         cors = match.cors
 
         # TODO: Can we replace the Model, and ModelSelct with json.dumps(data,
-        # json_serial) which has been udpated to handle these types?
+        # json_serial) which has been updated to handle these types?
 
         # TODO: All serialisable items need to have a obj.todict() method, otheriwse
         # str(obj) will be used.
@@ -260,23 +254,20 @@ class web(object):
         if isinstance(data, Response):
             return data
 
-        # Check to see if this is a peewee model and convert to
-        # dict,
-        if(isinstance(data, Model)):
+        # Check to see if this is a peewee model and convert to dict
+        if is_model(data):
             out = model_to_dict(out)
             data = out
 
-
-        if(isinstance(data, ModelSelect)):
+        if is_model_select(data):
             array_out = []
             for item in data:
                 array_out.append(model_to_dict(item))
-                out = {'results': array_out}
+                out = { 'results': array_out }
                 data = out
 
-
         # Template expected, attempt render
-        if(template != None):
+        if template is not None:
             # Add request to data
             data = data or {}
             data['request'] = request
@@ -334,7 +325,7 @@ class web(object):
     def response(data, *args, **kwargs):
         # TODO: This should build a web() compliant response object
         # that handles cors, additional headers, etc
-        response=Response(data, *args, **kwargs)
+        response = Response(data, *args, **kwargs)
         # if cors: cors.set(response)
 
 
@@ -362,7 +353,7 @@ class web(object):
 
     @staticmethod
     def template(cwd, template, data):
-        # This maye have to be removed if CWD proves to be mutable per request
+        # This may have to be removed if CWD proves to be mutable per request
         web.template_engine = web.template_engine or Template(cwd)
 
         # Add any registered filters
@@ -383,4 +374,3 @@ class web(object):
     @staticmethod
     def all():
         return web.destination
-

@@ -1,6 +1,4 @@
-# TODO: Move this to ext
-from peewee import ModelSelect, Model
-from playhouse.shortcuts import model_to_dict
+from .peewee import is_model, is_model_select, model_to_dict
 
 # We need custom json_serial to handle date time - not supported
 # by the default json_dumps
@@ -22,10 +20,10 @@ def json_serial(obj):
     if isinstance(obj, (date, time)):
         return obj.isoformat()
 
-    if isinstance(obj, Model):
+    if is_model(obj):
         return model_to_dict(obj)
 
-    if isinstance(obj, ModelSelect):
+    if is_model_select(obj):
         return [ model_to_dict(item) for item in obj ]
 
     return str(obj)
