@@ -15,15 +15,6 @@ from .cors import CORS
 from .methods import GET, POST, DELETE, PUT, PATCH, BaseMethod
 from .serialise import json_serial, tojson
 from .errors import TooManyArgumentsError
-<<<<<<< HEAD
-=======
-
-# TODO: Get rid of this dependancy
-from peewee import *
-from peewee import ModelSelect
-from playhouse.shortcuts import model_to_dict, dict_to_model
->>>>>>> b3e42cf14e2b4b8e828f57516e3eb015d6353d7a
-
 from .peewee import is_model, is_model_select, model_to_dict
 
 #  _   _   _   _  _  _   _ _ _  ___  ___   ___  _  _ _  ___  _  _  _  __
