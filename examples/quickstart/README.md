@@ -26,7 +26,7 @@ $ python3.6 -m venv env
 $ source env/bin/activate
 
 # Instal requirements for this project
-$ pip install -e git+https://github.com/yevrah/simplerr#egg=simplerr
+$ pip install simplerr
 
 ```
 

@@ -160,7 +160,7 @@ Imporoved pythonic authentication, pseudo code below::
     def public_page(request):
       # Some public method
 
-## 12. Url for functionality  
+## 12. Url for functionality
 ------------------------------
 
 
@@ -251,7 +251,7 @@ Release 0.18
       return msg
 
 
-- Debug bar setup - with docstring support, see 
+- Debug bar setup - with docstring support, see
 
   - For unit tests; http://tungwaiyip.info/software/sample_test_report.html or https://github.com/meshy/colour-runner/tree/master/colour_runner
   - Integrateion with custom stop points for werkzeug debugger
