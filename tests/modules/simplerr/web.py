@@ -25,6 +25,11 @@ def dict_response_fn(r):
     return {}
 
 
+@web('/response/status')
+def status_response_fn(r):
+    return {'error': 'msg'}, 400
+
+
 @web('/response/file', file=True)
 def file_response_fn(r):
     return 'assets/html/01_pure_html.html'
@@ -66,11 +71,9 @@ class BasicWebTests(TestCase):
         # self.assertEqual( web.destinations[2].endpoint, 'dict_response_fn' )
         self.assertEqual( web.destinations[2].route, '/response/dict' )
 
-
     # def test_match_simple_route(self):
     #     rv = web.match(create_env('/simple'))
     #     self.assertEquals( rv.endpoint, 'simple_fn' )
-
 
     def test_process_request(self):
         from werkzeug.wrappers import Request, Response
@@ -81,7 +84,6 @@ class BasicWebTests(TestCase):
         self.assertIsInstance(resp, Response)
         self.assertEquals(resp.status_code, 200)
         self.assertEquals(resp.data, b'null')
-
 
     def test_response_util(self):
         from werkzeug.wrappers import Response
@@ -94,6 +96,16 @@ class BasicWebTests(TestCase):
     def test_template_util(self):
         rv = web.template(self.cwd, '/assets/html/01_pure_html.html', {})
         self.assertEquals(rv, 'Hello World')
+
+    def test_response_status(self):
+        from werkzeug.wrappers import Request, Response
+        env = create_env('/response/status')
+        req = Request(env)
+
+        resp = web.process(req, env, self.cwd)
+        self.assertIsInstance(resp, Response)
+        self.assertEquals(resp.status_code, 400)
+        self.assertEquals(resp.data, b'{"error": "msg"}')
 
     def test_request_redirect(self):
         from werkzeug.wrappers import Response

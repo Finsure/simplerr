@@ -13,9 +13,10 @@ from .script import script
 from .template import Template
 from .cors import CORS
 from .methods import GET, POST, DELETE, PUT, PATCH, BaseMethod
-from .serialise import json_serial, tojson
+from .serialise import tojson
 from .errors import TooManyArgumentsError
 from .peewee import is_model, is_model_select, model_to_dict
+
 
 #  _   _   _   _  _  _   _ _ _  ___  ___   ___  _  _ _  ___  _  _  _  __
 # | \_/ | / \ | || \| | | | | || __|| o ) | o \/ \| | ||_ _|| || \| |/ _|
@@ -223,27 +224,30 @@ class web(object):
 
         return match
 
-
     @staticmethod
     def process(request, environ, cwd):
-        # tid(f'web.process:(r, e cwd={cwd})')
-
         # Weg web() object that matches this request
         match = web.match(environ)
 
         # Lets extract some key response information
         args = match.args
-        out = match.fn(request, **args)
-        # tid(f'web.process().out = {out}')
+        val = match.fn(request, **args)
+
+        # Get optional status code for json response
+        # allows for routes to return as:
+        #   >>> return { 'error': 'No token.' }, 401
+        if isinstance(val, tuple):
+            out = val[0]
+            status_code = val[1]
+        else:
+            out = val
+            status_code = 200
 
         data = out
         template = match.template
-        file = match.file
+        is_file = match.file
         mimetype = match.mimetype
         cors = match.cors
-
-        # TODO: Can we replace the Model, and ModelSelct with json.dumps(data,
-        # json_serial) which has been updated to handle these types?
 
         # TODO: All serialisable items need to have a obj.todict() method, otheriwse
         # str(obj) will be used.
@@ -257,6 +261,7 @@ class web(object):
             out = model_to_dict(out)
             data = out
 
+        # Check to see if this is a peewee model select and convert models to dict
         if is_model_select(data):
             array_out = []
             for item in data:
@@ -275,17 +280,17 @@ class web(object):
             response.headers['Content-Type'] = 'text/html;charset=utf-8'
 
             # TODO: make reponse plugin based, so cors needs to be added - pre-respon
-            if cors: cors.set(response)
+            if cors:
+                cors.set(response)
 
             return response
 
-
         # Reference example implementation here
         #   http://bit.ly/2ocHYNZ
-        if(file == True):
+        if is_file is True:
             file_path = Path(cwd) / Path(out)
-            file = open(file_path.absolute().__str__(), 'rb')
-            data = wrap_file(environ, file)
+            file_ = open(file_path.absolute().__str__(), 'rb')
+            data = wrap_file(environ, file_)
 
             mtype = mimetype or mimetypes.guess_type(file_path.__str__())[0]
 
@@ -295,28 +300,34 @@ class web(object):
                 urifile = environ.get('PATH_INFO').split('/')[-1:][0]
                 mtype = mimetypes.guess_type(urifile)[0]
 
-
             response = Response(data, direct_passthrough=True)
             response.headers['Content-Type'] = '{};charset=utf-8'.format(mtype)
             response.headers['Cache-Control'] = 'public, max-age=10800'
 
-            if cors: cors.set(response)
+            if cors:
+                cors.set(response)
+
             return response
 
         # No template, just plain old string response
         if isinstance(data, str):
             response = Response(data)
             response.headers['Content-Type'] = 'text/html;charset=utf-8'
-            if cors: cors.set(response)
-            return response
 
+            if cors:
+                cors.set(response)
+
+            return response
 
         # Just raw data, send as is
         # TODO: Must be flagged as json explicity
         out = tojson(data)
-        response = Response(out)
+        response = Response(out, status=status_code)
         response.headers['Content-Type'] = 'application/json'
-        if cors: cors.set(response)
+
+        if cors:
+            cors.set(response)
+
         return response
 
     @staticmethod
@@ -324,9 +335,6 @@ class web(object):
         # TODO: This should build a web() compliant response object
         # that handles cors, additional headers, etc
         response = Response(data, *args, **kwargs)
-        # if cors: cors.set(response)
-
-
         return response
 
     @staticmethod
@@ -339,6 +347,7 @@ class web(object):
             def decorated(*args, **kwargs):
                 fn(*args, **kwargs)
             return decorated
+
         return wrap
 
         @functools.wraps(fn)
