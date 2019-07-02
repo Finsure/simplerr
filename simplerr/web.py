@@ -18,6 +18,10 @@ from .errors import TooManyArgumentsError
 from .peewee import is_model, is_model_select, model_to_dict
 
 
+def make_response(*args, **kwargs):
+    return Response(*args, **kwargs)
+
+
 #  _   _   _   _  _  _   _ _ _  ___  ___   ___  _  _ _  ___  _  _  _  __
 # | \_/ | / \ | || \| | | | | || __|| o ) | o \/ \| | ||_ _|| || \| |/ _|
 # | \_/ || o || || \\ | | V V || _| | o \ |   ( o ) U | | | | || \\ ( |_n
