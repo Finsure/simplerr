@@ -32,6 +32,7 @@ setup(
 
     description='A sample Python webframework',
     long_description=readme,
+    long_description_content_type="text/markdown",
 
     # The project's main homepage.
     url='https://github.com/yevrah/simplerr',
@@ -57,7 +58,6 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        'Topic :: Software Development :: Web Tools',
 
         # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: MIT License',
@@ -89,8 +89,6 @@ setup(
         'Jinja2==2.10',
         'Werkzeug==0.14.1',
         'termcolor==1.1.0',
-        # Doesntwork on windows, but needed for some examples
-        # 'mod-wsgi==4.5.24',
     ],
 
     # List additional groups of dependencies here (e.g. development
