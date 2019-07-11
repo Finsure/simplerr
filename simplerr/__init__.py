@@ -6,3 +6,6 @@ from .web import web, make_response
 # Import Grammar Helpers
 from .methods import GET, POST, PUT, DELETE
 from .cors import CORS
+
+# Import Session Store
+from .session import FileSystemSessionStore
