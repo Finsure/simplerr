@@ -17,5 +17,4 @@ class Template(object):
         self.env.globals = Template.globals
 
     def render(self, template, data={}):
-        print(self.env.globals)
         return self.env.get_template(template).render(**data)
