@@ -270,7 +270,7 @@ class web(object):
             array_out = []
             for item in data:
                 array_out.append(model_to_dict(item))
-                out = { 'results': array_out }
+                out = {'results': array_out}
                 data = out
 
         # Template expected, attempt render

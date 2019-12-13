@@ -64,6 +64,10 @@ class WebEvents(object):
         self.pre_request = []
         self.post_request = []
         self.post_exception = []
+        self.error_handler = {}
+
+    def on_error(self, code, fn):
+        self.error_handler[code] = fn
 
     # Pre-request subscription
     def on_pre_response(self, fn):
@@ -147,15 +151,20 @@ class dispatcher(object):
 
         # Get view script and view module
         sc = script(self.cwd, request.path)
-        view_module = sc.get_module()
+        sc.get_module()
 
         # Process Response, and get payload
         try:
             response = web.process(request, environ, self.cwd)
         except Exception as e:
             # Handle exception
-            self.global_events.fire_post_exception(request, e)
-            raise e
+            if self.global_events.error_handler.get(e.code) is not None:
+                # Has specific error code handler
+                response = self.global_events.error_handler[e.code]()
+            else:
+                # Catch all
+                self.global_events.fire_post_exception(request, e)
+                raise e
 
         # Done, fire post response events
         request.view_events.fire_post_response(request, response)
@@ -183,12 +192,10 @@ class wsgi(object):
 
         self.app = None
 
-
         # TODO: Need to update interface to handle these
         self.session_store = FileSystemSessionStore()
 
         self.cwd = self.make_cwd()
-
 
         # Add Relevent Web Events
         # NOTE: Events created at this level should fire static events that
@@ -202,7 +209,7 @@ class wsgi(object):
         self.global_events.on_post_response(self.session_store.post_response)
 
         # Add CWD to search path, this is where project modules will be located
-        sys.path.append( self.cwd.absolute().__str__() )
+        sys.path.append(self.cwd.absolute().__str__())
 
     def pre_response(self, m):
         self.global_events.on_pre_response(m)
@@ -218,6 +225,7 @@ class wsgi(object):
         def decorator(f, request, response):
             f(request, response)
             return f
+
         return decorator
 
     def post_exception(self, m):
@@ -226,6 +234,15 @@ class wsgi(object):
         def decorator(f, request, error):
             f(request, error)
             return f
+
+        return decorator
+
+    def errorhandler(self, code):
+
+        def decorator(fn):
+            self.global_events.on_error(code, fn)
+            return fn
+
         return decorator
 
     def make_cwd(self):
