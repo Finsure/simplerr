@@ -157,9 +157,8 @@ class dispatcher(object):
         try:
             response = web.process(request, environ, self.cwd)
         except Exception as e:
-            # Handle exception
-            if self.global_events.error_handler.get(e.code) is not None:
-                # Has specific error code handler
+            if hasattr(e, 'code') and self.global_events.error_handler.get(e.code) is not None:
+                # Is a werkzeug error and we should handle it
                 response = self.global_events.error_handler[e.code]()
             else:
                 # Catch all
