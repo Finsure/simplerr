@@ -1,6 +1,8 @@
 #!/usr/bin/env python
+
 import mimetypes
 import functools
+
 from pathlib import Path
 
 from werkzeug.wrappers import Response

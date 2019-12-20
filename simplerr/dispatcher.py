@@ -1,35 +1,18 @@
 #!/usr/bin/env python
 
+import sys
+import json
+
+from pathlib import Path
+
 from werkzeug.serving import run_simple
 from werkzeug.wrappers import Request
 from werkzeug.debug import DebuggedApplication
 
-from pathlib import Path
-
 from .web import web
 from .script import script
 from .session import FileSystemSessionStore
-
-import sys
-import json
-
-
-class Error(Exception):
-    """Base class for exceptions in this module."""
-    pass
-
-
-class SiteNotFoundError(Error):
-    """Exception raised for errors in the site path
-
-    Attributes:
-        expression -- input expression in which the error occurred
-        message -- explanation of the error
-    """
-
-    def __init__(self, site, message):
-        self.site = message
-        self.message = message
+from .errors import SiteNotFoundError
 
 
 class WebEvents(object):
