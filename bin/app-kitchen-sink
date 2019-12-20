@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Go to root, set python-path to current project
+cd $(git rev-parse --show-toplevel)
+export PYTHONPATH=$PWD
+
+# Setup env for project
+mkdir -p .simplerr
+python3 -m venv .simplerr/env-ks
+source .simplerr/env-ks/bin/activate
+pip install -r requirements.txt
+
+# go to quickstart, setup db and start
+cd examples/kitchen-sink
+python -m simplerr runserver

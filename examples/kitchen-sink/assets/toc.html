@@ -33,18 +33,13 @@
 
 
           <h3>Forward</h3><a name="welcome"></a>
-            <p>Welcome to the echo example for the Simplerr framework version
+            <p>Welcome to the echo example for the simplerr framework version
               {{version}}. Here you will find some basic usage on how to
               execute basic routes with params, query strings, and form
               inputs</p>
 
-            <p>All the examples below can be run using `manage.py` using the
+            <p>All the examples below can be run using `python -m simplerr runserver` using the
               following commands</p>
-
-            <pre>
-              ./manage.py runserver --site ./examples/01.echo/
-            </pre>
-
 
 
           <h3>Simple Text Responses</h3><a name="simple"></a>
@@ -166,14 +161,14 @@
                    function flash(result) {$('#flash').html(result.msg)};
                    function del() {
                       $.ajax({
-                        url: '/item/delete/' + $('#item').val(), 
-                        type: 'DELETE', 
+                        url: '/item/delete/' + $('#item').val(),
+                        type: 'DELETE',
                         success: flash(result) });
                     }
 
                    function update() {
                       $.ajax({
-                        url: '/item/update/' + $('#item').val(), 
+                        url: '/item/update/' + $('#item').val(),
                         type: 'PUT',
                         success: flash(result) });
                     }

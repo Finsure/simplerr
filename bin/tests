@@ -1,0 +1,52 @@
+#!/bin/sh
+
+main() {
+    setup      `# test boilerplate`
+
+    runtest    `# trigger first test run`
+    watchfiles `# following tests triggered by file changes`
+}
+
+setup() {
+    cd $(git rev-parse --show-toplevel)
+
+    mkdir -p .simplerr
+    python3 -m venv .simplerr/env-tests
+    source .simplerr/env-tests/bin/activate
+    pip install -r requirements.txt
+    pip install colour_runner flake8
+}
+
+watchfiles() {
+    fswatch \
+        -e ".*"     `# exclude everything` \
+        -i "\\.py$" `# except *.py files`  \
+        . | waitforchange
+}
+
+waitforchange() {
+    while read f; do
+        runtest
+    done
+}
+
+runtest() {
+    clear
+    echo "---------------------------"
+    echo "File changed"
+    echo $f
+    echo "---------------------------"
+
+    tests/run.py
+
+    echo ""
+    echo ""
+    echo "---------------------------"
+    echo "Linted top 10 items"
+    flake8 simplerr | head -n 10
+    echo "---------------------------"
+}
+
+
+# Main
+main

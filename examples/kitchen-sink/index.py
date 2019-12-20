@@ -1,27 +1,21 @@
 from simplerr import web, GET, POST
 
-
 @web('/')
-@web('/home')
 def plain(request):
-    return """Hello from Echo index.py, click for a <a href="/TOC">TOC</a>"""
-
+    return web.redirect('/TOC')
 
 @web('/TOC', '/assets/toc.html')
 def template(request):
     import simplerr
     return {"version": simplerr.__version__}
 
-
 @web('/echo/<msg>')
 def echo(request, msg):
     return "Echo from index: {}".format(msg)
 
-
 @web('/echo/args')
 def echo_args(request):
     return "Echo using args: {}".format(request.args['msg'])
-
 
 @web('/echo/form', GET)
 def echo_form(request):
@@ -38,8 +32,6 @@ def echo_form(request):
     </html>
     """
 
-
-
 @web('/echo/form', POST)
 def echo_form_post(request):
     msg = request.form["msg"]
@@ -51,7 +43,6 @@ def echo_form_post(request):
     </body>
     </html>
     """.format(msg)
-
 
 class storeme():
     def __init__(self, name):
@@ -76,11 +67,9 @@ def session_get(request):
 def myupper(input):
     return input.upper()
 
-
 @web('/echo/filter/<msg>', template="/assets/filter.html")
 def echo_filter(request, msg):
     return {'msg': msg}
-
 
 @web('/redirect')
 def redirect(request):

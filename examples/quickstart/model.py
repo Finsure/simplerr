@@ -1,5 +1,4 @@
 from peewee import *
-import config
 
 db = SqliteDatabase('people.db')
 

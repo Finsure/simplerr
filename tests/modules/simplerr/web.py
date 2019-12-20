@@ -9,7 +9,6 @@ This test suite makes extensive use the the werkzeug test framework, it can be
 found here: http://werkzeug.pocoo.org/docs/0.14/test/
 """
 
-
 @web('/simple')
 def simple_fn(r):
     return

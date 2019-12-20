@@ -35,7 +35,7 @@ def echo_form(request):
     """.format(msg)
 
 
-@web('/echo_json/<msg>')
+@web('/echo/json/<msg>')
 def echo_json(request, msg):
     return {'msg': msg}
 
@@ -46,7 +46,7 @@ def echo_template(request, msg):
 
 
 @web('/person/api/all')
-def person_api(request):
+def person_all(request):
     return Person.select()
 
 
@@ -55,6 +55,6 @@ def person_first(request):
     return Person.select().get()
 
 
-@web('/files/<path:file>', file=True)
-def files(request, file):
+@web('/assets/<path:file>', file=True)
+def assets(request, file):
     return 'assets/' + file
