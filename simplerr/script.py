@@ -24,6 +24,7 @@ Returns:
 
 """
 
+
 class script(object):
 
     # Set path to root of project
@@ -34,10 +35,9 @@ class script(object):
     #
     # route = '/'
 
-
     def __init__(self, cwd, route):
         self.cwd = Path(cwd)
-        self.route = Path( "." + route)
+        self.route = Path("." + route)
 
     def get_script(self):
         # Examples
@@ -48,7 +48,7 @@ class script(object):
 
         # Maximum search path, start the top of the
         # route and continue down. By using route
-        # we ensure we don't dig deaper then the 
+        # we ensure we don't dig deaper then the
         # web path (cwd).
 
         # We also use pathlibs for a more OO view of the filesystem
@@ -61,14 +61,13 @@ class script(object):
             if root_index_py.exists():
                 return root_index_py.absolute().__str__()
 
-
         for i in range(max_depth,0,-1):
             search = self.route.parts[:i]
             search_path = self.cwd / Path(*search)
 
             # Is this a script file without the '.py'
             # eg, test for ..mple.com/app/login -> ..mple.com/app/login.py
-            script_py_str = ''.join([search_path.__str__(), ".py" ])
+            script_py_str = ''.join([search_path.__str__(), ".py"])
             script_py = Path(script_py_str)
 
             if script_py.exists():
@@ -80,12 +79,12 @@ class script(object):
             if index_py.exists():
                 return index_py.absolute().__str__()
 
-
             # Parent folder "/app/" cant be a py file ("/.py") but can contain an
             # index.py file ("/index.py") so if i==1 then we have to test for
             # this final edge case. Note, application root is different to site
             # route and needs a different edge test
-            if i!=1: continue
+            if i != 1:
+                continue
 
             root_index_py = search_path.parent / 'index.py'
             if root_index_py.exists():
@@ -93,12 +92,9 @@ class script(object):
 
         raise NotFound('Could not find matching site file')
 
-
-
     def get_module(self):
         # https://www.blog.pythonlibrary.org/2016/05/27/python-201-an-intro-to-importlib/
         # https://docs.python.org/3/library/importlib.html
-
 
         # TODO: Change.. see https://dev.to/0xcrypto/dynamic-importing-stuff-in-python--1805
         # Can we replace this with the following
@@ -114,6 +110,3 @@ class script(object):
         #   app = module.application()
 
         return module
-
-
-

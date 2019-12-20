@@ -24,7 +24,7 @@ def json_serial(obj):
         return model_to_dict(obj)
 
     if is_model_select(obj):
-        return [ model_to_dict(item) for item in obj ]
+        return [model_to_dict(item) for item in obj]
 
     return str(obj)
 

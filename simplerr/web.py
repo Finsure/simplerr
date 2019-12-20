@@ -3,16 +3,14 @@ import mimetypes
 import functools
 from pathlib import Path
 
-from werkzeug.wrappers import Request, Response
+from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
 from werkzeug.exceptions import abort
 from werkzeug.routing import Map, Rule
 from werkzeug.utils import redirect as wz_redirect
 
-from .script import script
 from .template import Template
-from .cors import CORS
-from .methods import GET, POST, DELETE, PUT, PATCH, BaseMethod
+from .methods import BaseMethod
 from .serialise import tojson
 from .errors import TooManyArgumentsError
 from .peewee import is_model, is_model_select, model_to_dict
@@ -22,11 +20,6 @@ def make_response(*args, **kwargs):
     return Response(*args, **kwargs)
 
 
-#  _   _   _   _  _  _   _ _ _  ___  ___   ___  _  _ _  ___  _  _  _  __
-# | \_/ | / \ | || \| | | | | || __|| o ) | o \/ \| | ||_ _|| || \| |/ _|
-# | \_/ || o || || \\ | | V V || _| | o \ |   ( o ) U | | | | || \\ ( |_n
-# |_| |_||_n_||_||_|\_|  \_n_/ |___||___/ |_|\\\_/|___| |_| |_||_|\_|\__/
-#
 class web(object):
     """Primary routing decorator and helpers
 
@@ -121,7 +114,17 @@ class web(object):
     def restore_presets():
         web.destinations = []
 
-    def __init__(self, *args, route=None, template=None, methods=None, endpoint=None, file=False, cors=None, mimetype=None):
+    def __init__(
+        self,
+        *args,
+        route=None,
+        template=None,
+        methods=None,
+        endpoint=None,
+        file=False,
+        cors=None,
+        mimetype=None
+    ):
         self.endpoint = endpoint
         self.fn = None
         self.args = None  # to be set when matched() is called
@@ -162,7 +165,6 @@ class web(object):
             for method in args_methods:
                 self.methods.append(method.verb)
 
-
         # Only one string, maybe a route or template - default to route if not
         # already populated.
         if len(args_strings) == 1:
@@ -184,7 +186,6 @@ class web(object):
         # currently supported.
         if len(args_strings) > 2:
             raise TooManyArgumentsError("Got too many string arguments")
-
 
     def __call__(self, fn):
         # A quick cleanup first, if no endpoint was specified we need to set it
@@ -253,9 +254,6 @@ class web(object):
         mimetype = match.mimetype
         cors = match.cors
 
-        # TODO: All serialisable items need to have a obj.todict() method, otheriwse
-        # str(obj) will be used.
-
         # User has decided to run their own request object, just return this
         if isinstance(data, Response):
             return data
@@ -283,7 +281,6 @@ class web(object):
             response = Response(out)
             response.headers['Content-Type'] = 'text/html;charset=utf-8'
 
-            # TODO: make reponse plugin based, so cors needs to be added - pre-respon
             if cors:
                 cors.set(response)
 
