@@ -81,7 +81,6 @@ class WebRequest(Request):
 
 
 class dispatcher(object):
-
     def __init__(self, cwd, global_events):
         self.cwd = cwd
         self.global_events = global_events
@@ -105,7 +104,10 @@ class dispatcher(object):
         try:
             response = web.process(request, environ, self.cwd)
         except Exception as e:
-            if hasattr(e, 'code') and self.global_events.error_handler.get(e.code) is not None:
+            if (
+                hasattr(e, "code")
+                and self.global_events.error_handler.get(e.code) is not None
+            ):
                 # Is a werkzeug error and we should handle it
                 response = self.global_events.error_handler[e.code]()
             else:
@@ -122,18 +124,18 @@ class dispatcher(object):
 
 
 class Simplerr(object):
-
     def __init__(
         self,
         site,
         hostname,
         port,
         use_reloader=True,
+        use_session_store=True,
         use_debugger=False,
         use_evalex=False,
         threaded=True,
         processes=1,
-        use_profiler=False
+        use_profiler=False,
     ):
         self.site = site
         self.hostname = hostname
@@ -144,7 +146,6 @@ class Simplerr(object):
         self.threaded = threaded
         self.processes = processes
 
-        self.session_store = FileSystemSessionStore()
         self.cwd = self.make_cwd()
 
         # Add Relevent Web Events
@@ -155,8 +156,10 @@ class Simplerr(object):
         self.global_events = WebEvents()
 
         # Add session events to pre and post response
-        self.global_events.on_pre_response(self.session_store.pre_response)
-        self.global_events.on_post_response(self.session_store.post_response)
+        if use_session_store is True:
+            self.session_store = FileSystemSessionStore()
+            self.global_events.on_pre_response(self.session_store.pre_response)
+            self.global_events.on_post_response(self.session_store.post_response)
 
         # Add CWD to search path, this is where project modules will be located
         sys.path.append(self.cwd.absolute().__str__())
@@ -194,7 +197,6 @@ class Simplerr(object):
         return decorator
 
     def errorhandler(self, code):
-
         def decorator(fn):
             self.global_events.on_error(code, fn)
             return fn
@@ -211,10 +213,7 @@ class Simplerr(object):
         if path_with_cwd.exists():
             return path_with_cwd
 
-        raise SiteNotFoundError(
-            self.site,
-            "Could not access folder"
-        )
+        raise SiteNotFoundError(self.site, "Could not access folder")
 
     def serve(self):
         """Start a new development server."""
@@ -225,5 +224,5 @@ class Simplerr(object):
             use_reloader=self.use_reloader,
             use_debugger=self.use_debugger,
             threaded=self.threaded,
-            processes=self.processes
+            processes=self.processes,
         )
