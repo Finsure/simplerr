@@ -262,7 +262,7 @@ class web(object):
 
         # Check to see if this is a peewee model and convert to dict
         if is_model(data):
-            if 'to_dict' in dir(out)
+            if 'to_dict' in dir(out):
                 out = out.to_dict()
             else:
                 out = model_to_dict(out)
@@ -273,7 +273,7 @@ class web(object):
         if is_model_select(data):
             array_out = []
             for item in data:
-                if 'to_dict' in dir(out)
+                if 'to_dict' in dir(out):
                     array_out.append(item.to_dict())
                 else:
                     out = model_to_dict(out)
