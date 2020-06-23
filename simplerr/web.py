@@ -276,7 +276,7 @@ class web(object):
                 if 'to_dict' in dir(out):
                     array_out.append(item.to_dict())
                 else:
-                    out = model_to_dict(out)
+                    array_out.append(model_to_dict(item))
 
                 array_out.append(model_to_dict(item))
                 out = {'results': array_out}
