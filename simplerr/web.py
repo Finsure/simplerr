@@ -278,7 +278,6 @@ class web(object):
                 else:
                     array_out.append(model_to_dict(item))
 
-                array_out.append(model_to_dict(item))
                 out = {'results': array_out}
                 data = out
 
