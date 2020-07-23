@@ -6,5 +6,5 @@ from .dispatcher import Simplerr
 from .web import web, make_response
 
 # Import Grammar Helpers
-from .methods import GET, POST, PUT, DELETE
+from .methods import GET, POST, PUT, DELETE, PATCH
 from .cors import CORS
