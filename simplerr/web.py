@@ -137,7 +137,7 @@ class web(object):
         # We can specify route, template and methods using **kwargs
         self.route = route
         self.template = template
-        self.methods = methods     # Methods should be left as None to accept all
+        self.methods = methods  # Methods should be left as None to accept all
 
         # However, we also allow a basic grammer with optional arguments, for example:
         #
@@ -159,7 +159,11 @@ class web(object):
 
         # We have to check not string first as issubclass fails on testing str
         # items - This extracts GET/POST which are the only non-string types expected
-        args_methods = [item for item in args if not(isinstance(item, str)) and issubclass(item, BaseMethod)]
+        args_methods = [
+            item
+            for item in args
+            if not (isinstance(item, str)) and issubclass(item, BaseMethod)
+        ]
 
         # Aappend all methods into self.methods
         if len(args_methods) > 0:
@@ -170,16 +174,16 @@ class web(object):
         # Only one string, maybe a route or template - default to route if not
         # already populated.
         if len(args_strings) == 1:
-            if(self.route is None):
+            if self.route is None:
                 self.route = args_strings[0]
-            elif(self.template is None):
+            elif self.template is None:
                 self.template = args_strings[0]
             else:
                 raise TooManyArgumentsError("Got too many string arguments")
 
         # Two strings - definately should be a route and a template
         if len(args_strings) == 2:
-            if(self.route is None and self.template is None):
+            if self.route is None and self.template is None:
                 self.route, self.template = args_strings
             else:
                 raise TooManyArgumentsError("Got too many string arguments")
@@ -192,7 +196,9 @@ class web(object):
     def __call__(self, fn):
         # A quick cleanup first, if no endpoint was specified we need to set it
         # to the view function
-        self.endpoint = self.endpoint or id(fn)  # Default endpoint name if none provided.
+        self.endpoint = self.endpoint or id(
+            fn
+        )  # Default endpoint name if none provided.
 
         # Proceed to create decorator
         self.fn = fn
@@ -262,7 +268,7 @@ class web(object):
 
         # Check to see if this is a peewee model and convert to dict
         if is_model(data):
-            if 'to_dict' in dir(out):
+            if "to_dict" in dir(out):
                 out = out.to_dict()
             else:
                 out = model_to_dict(out)
@@ -273,23 +279,23 @@ class web(object):
         if is_model_select(data):
             array_out = []
             for item in data:
-                if 'to_dict' in dir(out):
+                if "to_dict" in dir(out):
                     array_out.append(item.to_dict())
                 else:
                     array_out.append(model_to_dict(item))
 
-                out = {'results': array_out}
+                out = {"results": array_out}
                 data = out
 
         # Template expected, attempt render
         if template is not None:
             # Add request to data
             data = data or {}
-            data['request'] = request
+            data["request"] = request
             out = web.template(cwd, template, data)
 
             response = Response(out)
-            response.headers['Content-Type'] = 'text/html;charset=utf-8'
+            response.headers["Content-Type"] = "text/html;charset=utf-8"
 
             if cors:
                 cors.set(response)
@@ -300,7 +306,12 @@ class web(object):
         #   http://bit.ly/2ocHYNZ
         if is_file is True:
             file_path = Path(cwd) / Path(out)
-            file_ = open(file_path.absolute().__str__(), 'rb')
+
+            try:
+                file_ = open(file_path.absolute().__str__(), "rb")
+            except FileNotFoundError:  # endpoint doesn't exist
+                return Response(status=404)
+
             data = wrap_file(environ, file_)
 
             mtype = mimetype or mimetypes.guess_type(file_path.__str__())[0]
@@ -308,12 +319,12 @@ class web(object):
             # Sometimes files are named without extensions in the local storage, so
             # instead try and infer from the route
             if mtype is None:
-                urifile = environ.get('PATH_INFO').split('/')[-1:][0]
+                urifile = environ.get("PATH_INFO").split("/")[-1:][0]
                 mtype = mimetypes.guess_type(urifile)[0]
 
             response = Response(data, direct_passthrough=True)
-            response.headers['Content-Type'] = '{};charset=utf-8'.format(mtype)
-            response.headers['Cache-Control'] = 'public, max-age=10800'
+            response.headers["Content-Type"] = "{};charset=utf-8".format(mtype)
+            response.headers["Cache-Control"] = "public, max-age=10800"
 
             if cors:
                 cors.set(response)
@@ -323,7 +334,7 @@ class web(object):
         # No template, just plain old string response
         if isinstance(data, str):
             response = Response(data)
-            response.headers['Content-Type'] = 'text/html;charset=utf-8'
+            response.headers["Content-Type"] = "text/html;charset=utf-8"
 
             if cors:
                 cors.set(response)
@@ -334,7 +345,7 @@ class web(object):
         # TODO: Must be flagged as json explicity
         out = tojson(data)
         response = Response(out, status=status_code)
-        response.headers['Content-Type'] = 'application/json'
+        response.headers["Content-Type"] = "application/json"
 
         if cors:
             cors.set(response)
@@ -350,13 +361,13 @@ class web(object):
 
     @staticmethod
     def filter(name):
-
         def wrap(fn):
             # Add to filters dict
             web.filters[name] = fn
 
             def decorated(*args, **kwargs):
                 fn(*args, **kwargs)
+
             return decorated
 
         return wrap
