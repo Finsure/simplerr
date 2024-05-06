@@ -62,7 +62,7 @@ class WebEvents(object):
 
 
 class WebRequest(Request):
-    """Web Request object, extends Request object.  """
+    """Web Request object, extends Request object."""
 
     def __init__(self, *args, auth_class=None, **kwargs):
         super(WebRequest, self).__init__(*args, **kwargs)
@@ -73,7 +73,7 @@ class WebRequest(Request):
         """Adds support for JSON and other niceties"""
         try:
             data = self.data
-            out = json.loads(data, encoding="utf8")
+            out = json.loads(data)
         except ValueError:
             out = None
 
