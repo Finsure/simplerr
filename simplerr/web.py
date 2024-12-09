@@ -8,7 +8,7 @@ from pathlib import Path
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import wrap_file
 from werkzeug.exceptions import abort
-from werkzeug.routing import Map, Rule
+from werkzeug.routing import Map, Rule, MethodNotAllowed
 from werkzeug.utils import redirect as wz_redirect
 
 from .template import Template
@@ -117,15 +117,7 @@ class web(object):
         web.destinations = []
 
     def __init__(
-        self,
-        *args,
-        route=None,
-        template=None,
-        methods=None,
-        endpoint=None,
-        file=False,
-        cors=None,
-        mimetype=None
+        self, *args, route=None, template=None, methods=None, endpoint=None, file=False, cors=None, mimetype=None
     ):
         self.endpoint = endpoint
         self.fn = None
@@ -159,11 +151,7 @@ class web(object):
 
         # We have to check not string first as issubclass fails on testing str
         # items - This extracts GET/POST which are the only non-string types expected
-        args_methods = [
-            item
-            for item in args
-            if not (isinstance(item, str)) and issubclass(item, BaseMethod)
-        ]
+        args_methods = [item for item in args if not (isinstance(item, str)) and issubclass(item, BaseMethod)]
 
         # Aappend all methods into self.methods
         if len(args_methods) > 0:
@@ -196,9 +184,7 @@ class web(object):
     def __call__(self, fn):
         # A quick cleanup first, if no endpoint was specified we need to set it
         # to the view function
-        self.endpoint = self.endpoint or id(
-            fn
-        )  # Default endpoint name if none provided.
+        self.endpoint = self.endpoint or id(fn)  # Default endpoint name if none provided.
 
         # Proceed to create decorator
         self.fn = fn
@@ -240,7 +226,10 @@ class web(object):
     @staticmethod
     def process(request, environ, cwd):
         # Weg web() object that matches this request
-        match = web.match(environ)
+        try:
+            match = web.match(environ)
+        except MethodNotAllowed:
+            return Response(status=405)
 
         # Lets extract some key response information
         args = match.args
@@ -402,4 +391,4 @@ class web(object):
 
     @staticmethod
     def all():
-        return web.destination
+        return web.destinations
