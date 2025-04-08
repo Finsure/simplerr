@@ -62,7 +62,7 @@ class WebEvents(object):
 
 
 class WebRequest(Request):
-    """Web Request object, extends Request object.  """
+    """Web Request object, extends Request object."""
 
     def __init__(self, *args, auth_class=None, **kwargs):
         super(WebRequest, self).__init__(*args, **kwargs)
@@ -73,7 +73,7 @@ class WebRequest(Request):
         """Adds support for JSON and other niceties"""
         try:
             data = self.data
-            out = json.loads(data, encoding="utf8")
+            out = json.loads(data)
         except ValueError:
             out = None
 
@@ -104,10 +104,7 @@ class dispatcher(object):
         try:
             response = web.process(request, environ, self.cwd)
         except Exception as e:
-            if (
-                hasattr(e, "code")
-                and self.global_events.error_handler.get(e.code) is not None
-            ):
+            if hasattr(e, "code") and self.global_events.error_handler.get(e.code) is not None:
                 # Is a werkzeug error and we should handle it
                 response = self.global_events.error_handler[e.code]()
             else:
