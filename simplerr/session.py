@@ -1,7 +1,8 @@
-from secure_cookie.session import FilesystemSessionStore as WerkzeugFilesystemSessionStore
+from werkzeug.contrib.sessions import SessionStore
+from werkzeug.contrib.sessions import FilesystemSessionStore as WerkzeugFilesystemSessionStore
 
 
-class SessionSignalMixin:
+class SessionSignalMixin():
 
     def pre_response(self, request):
         self.clean()
@@ -24,7 +25,7 @@ class FileSystemSessionStore(WerkzeugFilesystemSessionStore, SessionSignalMixin)
         # Number of minutes before sessions expire
         self.expire = 40
 
-        self.COOKIE_NAME = "sessionfast"
+        self.COOKIE_NAME = 'sessionfast'
         WerkzeugFilesystemSessionStore.__init__(self, session_class=None)
 
     def clean(self):

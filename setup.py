@@ -71,21 +71,15 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        "click==8.1.8",
-        "Jinja2==3.1.6",
-        "MarkupSafe==3.0.2",
-        "peewee==3.17.9",
-        "secure-cookie==0.2.0",
-        "Werkzeug==3.0.6",
+        "click==7.0",
+        "Jinja2==2.10.3",
+        "Werkzeug==0.16.0",
     ],
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
     # for example:
     # $ pip install -e .[dev,test]
-    extras_require={
-        "dev": ["check-manifest"],
-        "test": ["coverage"],
-    },
+    extras_require={"dev": ["check-manifest"], "test": ["coverage"],},
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
@@ -100,10 +94,6 @@ setup(
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow
     # pip to create the appropriate form of executable for the target platform.
-    entry_points={
-        "console_scripts": [
-            "webserv=simplerr.__main__:main",
-        ],
-    },
+    entry_points={"console_scripts": ["webserv=simplerr.__main__:main",],},
     zip_safe=False,
 )
