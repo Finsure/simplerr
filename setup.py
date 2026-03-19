@@ -76,7 +76,7 @@ setup(
         "MarkupSafe==3.0.2",
         "peewee==3.17.9",
         "secure-cookie==0.2.0",
-        "Werkzeug==3.0.6",
+        "Werkzeug==3.1.4",
     ],
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
